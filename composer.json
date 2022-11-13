@@ -1,5 +1,4 @@
 {
-    "name": "Tests",
     "autoload": {
         "psr-4": {
             "App\\": "src/Classes"

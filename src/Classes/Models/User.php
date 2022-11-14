@@ -37,13 +37,18 @@ class User
     }
     /**
      * @return mixed
-     */public function getEmail()
+     */
+    public function getEmail()
     {
+        if (empty($this->email)) {
+            throw new \InvalidArgumentException("Error email", 403);
+        }
         return $this->email;
     }
     /**
      * @param mixed $email
-     */public function setEmail($email): void
+     */
+    public function setEmail($email): void
     {
         $this->email = $email;
     }

@@ -53,4 +53,11 @@ class UserTest extends TestCase
     {
         $this->assertEquals($age, $this->user->getAge());
     }
+
+    public function testEmailException()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        //$this->expectExceptionCode(403);
+        $this->user->getEmail();
+    }
 }

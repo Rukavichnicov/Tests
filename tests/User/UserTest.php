@@ -60,4 +60,21 @@ class UserTest extends TestCase
         //$this->expectExceptionCode(403);
         $this->user->getEmail();
     }
+
+    public function testEcho()
+    {
+        echo "success ";
+        $this->setOutputCallback(function ($str) {
+            return trim($str);
+        });
+        $this->expectOutputString('success');
+    }
+
+    public function testArray()
+    {
+        $this->assertEquals(
+            [1, 2, 3, 4, 5],
+            [1, 2, '3', 4, 5]
+        );
+    }
 }

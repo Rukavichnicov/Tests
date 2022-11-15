@@ -3,4 +3,10 @@
     <testsuite name="User">
         <directory suffix="Test.php">./tests/User</directory>
     </testsuite>
+
+    <coverage>
+        <include>
+            <directory suffix=".php">./tests/User</directory>
+        </include>
+    </coverage>
 </phpunit>

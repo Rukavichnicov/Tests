@@ -77,4 +77,27 @@ class UserTest extends TestCase
             [1, 2, '3', 4, 5]
         );
     }
+
+    public function testEmpty()
+    {
+        $this->markTestIncomplete('Incomlete');
+    }
+
+    public function testSkipped()
+    {
+        if(true) {
+            $this->markTestSkipped('Skipped test');
+        }
+    }
+
+    /**
+     * @requires PHP 8.1
+     * @medium
+     */
+    public function testRequireDoc() {
+        for($i = 0; $i <= 100000000; $i++) {
+
+        }
+        $this->assertEquals(5, 5);
+    }
 }

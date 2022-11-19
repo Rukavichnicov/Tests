@@ -2,6 +2,7 @@
 
 namespace User;
 
+use App\Models\Db;
 use App\Models\User;
 use PHPUnit\Framework\TestCase;
 
@@ -99,5 +100,22 @@ class UserTest extends TestCase
 
         }
         $this->assertEquals(5, 5);
+    }
+
+    public function testModel()
+    {
+        $db = $this->createMock(Db::class);
+        $db->expects($this->any())->method('connect')->willReturn(true);
+        //$db->method('query')->willReturn(true);
+        $db->method('query')->will(
+//            $this->returnArgument(0)
+//            $this->returnValue(true)
+//            $this->returnCallback(function () {
+//                return true;
+//            })
+            $this->onConsecutiveCalls( true, true)
+        );
+        $db->query('SELCET');
+        $this->assertTrue($this->user->save($db));
     }
 }

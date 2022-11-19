@@ -9,6 +9,16 @@ class User
     private $password;
     private $age;
 
+    public function save(Db $db)
+    {
+        if($db->connect('h', 'u', 'p', 'd')) {
+            if ($db->query("SELECT * FROM user")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * @param $name
      * @param $email

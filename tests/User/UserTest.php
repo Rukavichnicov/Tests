@@ -4,6 +4,7 @@ namespace User;
 
 use App\Models\Db;
 use App\Models\User;
+use App\Models\UserObserver;
 use PHPUnit\Framework\TestCase;
 
 class UserTest extends TestCase
@@ -18,7 +19,6 @@ class UserTest extends TestCase
 
     protected function tearDown(): void
     {
-
     }
 
     /**
@@ -86,7 +86,7 @@ class UserTest extends TestCase
 
     public function testSkipped()
     {
-        if(true) {
+        if (true) {
             $this->markTestSkipped('Skipped test');
         }
     }
@@ -95,9 +95,9 @@ class UserTest extends TestCase
      * @requires PHP 8.1
      * @medium
      */
-    public function testRequireDoc() {
-        for($i = 0; $i <= 100000000; $i++) {
-
+    public function testRequireDoc()
+    {
+        for ($i = 0; $i <= 100000000; $i++) {
         }
         $this->assertEquals(5, 5);
     }
@@ -113,9 +113,46 @@ class UserTest extends TestCase
 //            $this->returnCallback(function () {
 //                return true;
 //            })
-            $this->onConsecutiveCalls( true, true)
+            $this->onConsecutiveCalls(true, true)
         );
         $db->query('SELCET');
         $this->assertTrue($this->user->save($db));
+    }
+
+    public function testModelTwo()
+    {
+        $db = $this->getMockBuilder(Db::class)
+            ->disableOriginalConstructor()
+            ->disableOriginalClone()
+            ->setMockClassName('Db')
+            ->getMock();
+        $db->expects($this->any())->method('connect')->willReturn(true);
+        $db->method('query')->willReturn(true);
+        $db->query('SELCET');
+        $this->assertTrue($this->user->save($db));
+    }
+
+    public function testObserver()
+    {
+        $observer = $this->getMockBuilder(UserObserver::class)
+            ->getMock();
+
+        $observer->expects($this->exactly(2))
+            ->method('update')
+//            ->with($this->equalTo('update'))
+//            ->with($this->anything())
+//            ->with($this->stringContains('update'))
+//            ->withConsecutive(
+//                [$this->anything()],
+//                [$this->stringContains('upd')]
+//            )
+            ->with(
+                $this->callback(function ($param) {
+                    return $param == 'update';
+                })
+            );
+        $this->user->attach($observer);
+        $this->user->attach($observer);
+        $this->user->update();
     }
 }

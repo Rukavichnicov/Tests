@@ -9,9 +9,11 @@ class User
     private $password;
     private $age;
 
+    private array $observers;
+
     public function save(Db $db)
     {
-        if($db->connect('h', 'u', 'p', 'd')) {
+        if ($db->connect('h', 'u', 'p', 'd')) {
             if ($db->query("SELECT * FROM user")) {
                 return true;
             }
@@ -35,16 +37,20 @@ class User
 
     /**
      * @return mixed
-     */public function getName()
+     */
+    public function getName()
     {
         return $this->name;
     }
+
     /**
      * @param mixed $name
-     */public function setName($name): void
+     */
+    public function setName($name): void
     {
         $this->name = $name;
     }
+
     /**
      * @return mixed
      */
@@ -55,6 +61,7 @@ class User
         }
         return $this->email;
     }
+
     /**
      * @param mixed $email
      */
@@ -62,28 +69,53 @@ class User
     {
         $this->email = $email;
     }
+
     /**
      * @return mixed
-     */public function getPassword()
+     */
+    public function getPassword()
     {
         return $this->password;
     }
+
     /**
      * @param mixed $password
-     */public function setPassword($password): void
+     */
+    public function setPassword($password): void
     {
         $this->password = $password;
     }
+
     /**
      * @return mixed
-     */public function getAge()
+     */
+    public function getAge()
     {
         return $this->age;
     }
+
     /**
      * @param mixed $age
-     */public function setAge($age): void
+     */
+    public function setAge($age): void
     {
         $this->age = $age;
+    }
+
+    public function attach(UserObserver $userObserver)
+    {
+        $this->observers[] = $userObserver;
+    }
+
+    public function update()
+    {
+        $this->notify('update');
+    }
+
+    private function notify($string)
+    {
+        foreach ($this->observers as $observer) {
+            $observer->update($string);
+        }
     }
 }

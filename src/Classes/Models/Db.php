@@ -17,8 +17,8 @@ class Db
     public function connect($host, $user, $pass, $db)
     {
         try {
-        $this->pdo =new \PDO("mysql:host=" . $host . ";dbname=" . $db, $user, $pass);
-        } catch(\PDOException $exception) {
+            $this->pdo = new \PDO("mysql:host=" . $host . ";dbname=" . $db, $user, $pass);
+        } catch (\PDOException $exception) {
             return false;
         }
         return true;

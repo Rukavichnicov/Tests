@@ -5,7 +5,8 @@
         }
     },
     "require-dev": {
-        "phpunit/phpunit": "^9.5"
+        "phpunit/phpunit": "^9.5",
+        "mockery/mockery": "dev-master"
     },
     "require": {
         "phpunit/php-invoker": "^3.1",

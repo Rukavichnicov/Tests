@@ -132,6 +132,9 @@ class UserTest extends TestCase
         $this->assertTrue($this->user->save($db));
     }
 
+    /**
+     * @doesNotPerformAssertions
+     */
     public function testObserver()
     {
         $observer = $this->getMockBuilder(UserObserver::class)
@@ -152,6 +155,31 @@ class UserTest extends TestCase
                 })
             );
         $this->user->attach($observer);
+        $this->user->attach($observer);
+        $this->user->update();
+    }
+    public function testMockery()
+    {
+//        $db = \Mockery::mock(Db::class);
+//        $db->shouldReceive('connect')
+//            ->once()
+//            ->andReturn(true);
+//
+//        $db->shouldReceive('query')
+//            ->once()
+//            ->andReturn(true);
+//
+//        $this->assertTrue($this->user->save($db));
+        $observer = \Mockery::mock(UserObserver::class);
+
+        $observer->shouldReceive('update')
+//            ->with('update')
+            ->withArgs(function ($param) {
+                $this->assertEquals('update', $param);
+                return true;
+            })
+            ->once();
+
         $this->user->attach($observer);
         $this->user->update();
     }

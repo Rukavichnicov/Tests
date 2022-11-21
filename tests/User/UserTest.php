@@ -97,7 +97,7 @@ class UserTest extends TestCase
      */
     public function testRequireDoc()
     {
-        for ($i = 0; $i <= 100000000; $i++) {
+        for ($i = 0; $i <= 1000000; $i++) {
         }
         $this->assertEquals(5, 5);
     }
@@ -132,9 +132,6 @@ class UserTest extends TestCase
         $this->assertTrue($this->user->save($db));
     }
 
-    /**
-     * @doesNotPerformAssertions
-     */
     public function testObserver()
     {
         $observer = $this->getMockBuilder(UserObserver::class)
@@ -182,5 +179,59 @@ class UserTest extends TestCase
 
         $this->user->attach($observer);
         $this->user->update();
+    }
+
+    public function testAssertMethods() {
+        $array = ['key1' => 1, 'key2' => 2];
+        $this->assertArrayHasKey('key1', $array);
+        $this->assertArrayNotHasKey('key', $array);
+
+        $this->assertClassHasAttribute('age', User::class);
+        $this->assertClassNotHasAttribute('login', User::class);
+
+        $this->assertClassNotHasStaticAttribute('age', User::class);
+
+        $this->assertContains(33, [1, 2, 33, 35]);
+        $this->assertStringContainsString('abc', 'abcde');
+        $this->assertContainsOnly('integer', [1, 2, 33, 35]);
+        $this->assertContainsOnlyInstancesOf(User::class, [$this->user, $this->user]);
+
+        $this->assertCount(2, [1, 2]);
+
+        $this->assertDirectoryExists('/home/sergey/PhpstormProjects/Tests/tests');
+        $this->assertDirectoryIsReadable('/home/sergey/PhpstormProjects/Tests/tests');
+        $this->assertDirectoryIsWritable('/home/sergey/PhpstormProjects/Tests/tests');
+
+        $this->assertEmpty('');
+
+        // ==
+        $this->assertEquals('33', $this->user->getAge());
+
+        // ===
+        $this->assertNotSame('33', $this->user->getAge());
+
+        $this->assertFalse(false);
+
+        $this->assertFileEquals('/home/sergey/PhpstormProjects/Tests/test1.txt',
+            '/home/sergey/PhpstormProjects/Tests/test2.txt');
+        $this->assertFileIsReadable('/home/sergey/PhpstormProjects/Tests/test1.txt');
+        $this->assertIsReadable('/home/sergey/PhpstormProjects/Tests/test1.txt');
+        $this->assertIsReadable('/home/sergey/PhpstormProjects/Tests');
+
+        $this->assertGreaterThan(1, 3);
+        $this->assertGreaterThanOrEqual(3, 3);
+        $this->assertLessThan(3, 1);
+        $this->assertLessThanOrEqual(3, 3);
+
+
+        $this->assertInfinite(log(0));
+        $this->assertInstanceOf(User::class, $this->user);
+        $this->assertIsIterable($array);
+        $this->assertIsObject($this->user);
+        $this->assertNan(acos(2));
+
+        $this->assertMatchesRegularExpression('/str/', '123str1');
+        $this->assertStringStartsWith('prefix', 'prefixxxxx');
+        $this->assertStringEndsWith('suffix', 'ssssuffix');
     }
 }

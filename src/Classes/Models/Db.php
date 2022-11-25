@@ -4,32 +4,52 @@ namespace App\Models;
 
 class Db
 {
+    private static $instance;
     private $pdo;
+
+    public static function getInstance()
+    {
+        if(self::$instance instanceof static) {
+            return self::$instance;
+        }
+        return  self::$instance = new static();
+    }
+
+    private function __construct()
+    {
+
+    }
 
     /**
      * @param $host
      * @param $user
      * @param $pass
-     * @param $db
-     * @return bool
+     * @param $dbname
      */
 
-    public function connect($host, $user, $pass, $db)
+    public function setConnection()
     {
         try {
-            $this->pdo = new \PDO("mysql:host=" . $host . ";dbname=" . $db, $user, $pass);
+            $this->pdo = new \PDO(
+                'mysql::memory:'
+            );
         } catch (\PDOException $exception) {
-            return false;
         }
-        return true;
     }
 
-    /**
-     * @param $query
-     * @return mixed
-     */
-    public function query($query)
+    public function query($sql)
     {
-        return $this->pdo->query($query);
+        $sth = $this->pdo->prepare($sql);
+        return $sth->execute();
+    }
+
+    public function getLastId()
+    {
+        return $this->pdo->lastInsertId();
+    }
+
+    public function getInsDb()
+    {
+        return $this->pdo;
     }
 }

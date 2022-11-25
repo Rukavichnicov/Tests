@@ -4,35 +4,21 @@ namespace App\Models;
 
 class User
 {
+    public const STATUS_WAIT = '0';
+    public const STATUS_ACTIVE = '1';
+
     private $name;
     private $email;
     private $password;
-    private $age;
+    private $isActive;
+    private $id;
 
-    private array $observers;
+    private $db;
 
-    public function save(Db $db)
+    public function __construct()
     {
-        if ($db->connect('h', 'u', 'p', 'd')) {
-            if ($db->query("SELECT * FROM user")) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * @param $name
-     * @param $email
-     * @param $password
-     * @param $age
-     */
-    public function __construct($name = null, $email = null, $password = null, $age = null)
-    {
-        $this->name = $name;
-        $this->email = $email;
-        $this->password = $password;
-        $this->age = $age;
+        $this->db = Db::getInstance();
+        $this->db->setConnection();
     }
 
     /**
@@ -56,9 +42,6 @@ class User
      */
     public function getEmail()
     {
-        if (empty($this->email)) {
-            throw new \InvalidArgumentException("Error email", 403);
-        }
         return $this->email;
     }
 
@@ -89,33 +72,79 @@ class User
     /**
      * @return mixed
      */
-    public function getAge()
+    public function getIsActive()
     {
-        return $this->age;
+        return $this->isActive;
     }
 
     /**
-     * @param mixed $age
+     * @param mixed $isActive
      */
-    public function setAge($age): void
+    public function setIsActive($isActive): void
     {
-        $this->age = $age;
+        $this->isActive = $isActive;
     }
 
-    public function attach(UserObserver $userObserver)
+    /**
+     * @return mixed
+     */
+    public function getId()
     {
-        $this->observers[] = $userObserver;
+        return $this->id;
     }
 
-    public function update()
+    /**
+     * @param mixed $id
+     */
+    private function setId($id): void
     {
-        $this->notify('update');
+        $this->id = $id;
     }
 
-    private function notify($string)
+    public function register($name, $email, $password)
     {
-        foreach ($this->observers as $observer) {
-            $observer->update($string);
+        $sql = "INSERT INTO users SET name='$name', email='$email', password='".password_hash($password, PASSWORD_BCRYPT)."';";
+        $this->db->query($sql);
+
+        $this->setId($this->db->getLastId());
+        return $this->find($this->getId());
+    }
+
+    public function find($id)
+    {
+        $sql = "SELECT * FROM users WHERE id = '$id' LIMIT 1;";
+        $result = $this->db->query($sql);
+
+        if($result) {
+            $row = $result->fetchAll();
+            $this->setName($row['name']);
+            $this->setPassword($row['password']);
+            $this->setEmail($row['email']);
+            $this->setIsActive($row['is_active']);
         }
+
+        return $this;
     }
+
+    public function isActive(): bool
+    {
+        return $this->getIsActive() === self::STATUS_ACTIVE;
+    }
+
+    public function isWait(): bool
+    {
+        return $this->getIsActive() === self::STATUS_WAIT;
+    }
+
+     public function verify(): void
+     {
+         if (!$this->isWait()) {
+             throw new \Exception('User verified');
+         }
+
+         $sql = "UPDATE users SET is_active='".self::STATUS_ACTIVE."' WHERE id = '$this->id';";
+         $this->db->query($sql);
+
+         $this->setIsActive(self::STATUS_ACTIVE);
+     }
 }

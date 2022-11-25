@@ -7,7 +7,7 @@
 
     <coverage>
         <include>
-            <directory suffix=".php">./tests/User</directory>
+            <directory suffix=".php">./src/Classes</directory>
         </include>
     </coverage>
 </phpunit>
